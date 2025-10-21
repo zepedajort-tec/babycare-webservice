@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 import crud, models
-from schemas import baby_profile_schemas
 from db import SessionLocal, engine
 
 # Crear las tablas en la base de datos

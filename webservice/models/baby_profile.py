@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date
+from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.orm import relationship
-from db.database import Base
+from webservice.db.database import Base
 
 class BabyProfile(Base):
     __tablename__ = "baby_profiles"

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from models import baby_profile as model
-from schemas import baby_profile_schemas as schema
+from webservice.models import baby_profile as model
+from webservice.schemas import baby_profile_schemas as schema
 
 
 # --- BabyProfile ---

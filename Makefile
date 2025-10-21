@@ -1,36 +1,72 @@
-.PHONY: lint requirements
+# ==========================================
+# CONFIGURACIÓN
+# ==========================================
+CONTAINER_NAME = mysql-babycare
+MYSQL_ROOT_PASSWORD = root123
+MYSQL_DATABASE = babycare
+MYSQL_IMAGE = mysql:8.0
+MYSQL_PORT = 3306
+SQL_FILE = database/setup_mysql.sql
 
-#################################################################################
-# GLOBALS                                                                       #
-#################################################################################
+# ==========================================
+# TAREAS
+# ==========================================
 
-PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-PROFILE = default
-PROJECT_NAME = steel_energy
-PYTHON_INTERPRETER = python3
+# Levantar el contenedor MySQL
+run:
+	@echo "🚀 Iniciando contenedor MySQL..."
+	docker run --name $(CONTAINER_NAME) \
+		-e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
+		-e MYSQL_DATABASE=$(MYSQL_DATABASE) \
+		-p $(MYSQL_PORT):3306 \
+		-d $(MYSQL_IMAGE)
+	@echo "⏳ Esperando a que el contenedor esté listo..."
+	sleep 20
+	@echo "✅ Contenedor $(CONTAINER_NAME) iniciado."
 
-ifeq (,$(shell which conda))
-HAS_CONDA=False
-else
-HAS_CONDA=True
-endif
+# Crear la base de datos dentro del contenedor
+db-setup:
+	@echo "📦 Cargando el script SQL dentro del contenedor..."
+	docker cp $(SQL_FILE) $(CONTAINER_NAME):/setup.sql
+	@echo "🛠️  Ejecutando script de creación de base de datos..."
+	docker exec -i $(CONTAINER_NAME) sh -c "mysql -u root -p$(MYSQL_ROOT_PASSWORD) $(MYSQL_DATABASE) < /setup.sql"
+	@echo "✅ Base de datos creada y configurada."
 
-#################################################################################
-# COMMANDS                                                                      #
-#################################################################################
+# Ejecuta todo: contenedor + script de base de datos
+setup: run db-setup
+	@echo "🎉 Entorno backend configurado con éxito."
+
+# Conectarse al contenedor MySQL
+connect:
+	@echo "🔗 Conectando a la base de datos dentro del contenedor..."
+	docker exec -it $(CONTAINER_NAME) mysql -u root -p$(MYSQL_ROOT_PASSWORD) $(MYSQL_DATABASE)
+
+# Mostrar estado del contenedor
+status:
+	@echo "🔍 Estado del contenedor:"
+	docker ps -a | grep $(CONTAINER_NAME) || echo "⚠️  No hay contenedor MySQL corriendo."
+
+# Detener contenedor sin eliminar
+stop:
+	@echo "🛑 Deteniendo contenedor..."
+	docker stop $(CONTAINER_NAME)
+	@echo "✅ Contenedor detenido."
+
+# Eliminar completamente el contenedor
+clean:
+	@echo "🧹 Eliminando contenedor y datos..."
+	docker rm -f $(CONTAINER_NAME)
+	@echo "✅ Contenedor eliminado."
+
 
 ## Install Python Dependencies
-requirements: test_environment
+requirements:
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 
 ## Lint using flake8
 lint:
-	flake8 crud
-	flake8 db
-	flake8 models
-	flake8 schemas
-	flake8 test
-	flake8 main.py
+	flake8 webservice
+
 
 .DEFAULT_GOAL := help
 
