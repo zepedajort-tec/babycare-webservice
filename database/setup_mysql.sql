@@ -52,7 +52,7 @@ INSERT INTO baby_profiles (name, age_months, weight, height)
 VALUES (p_name, p_age, p_weight, p_height);
 END$$
 
-CREATE PROCEDURE sp_read_babie(IN p_id INT)
+CREATE PROCEDURE sp_read_baby(IN p_id INT)
 BEGIN
 SELECT * FROM baby_profiles as bp where bp.id = p_id;
 END$$

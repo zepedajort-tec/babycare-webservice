@@ -1,4 +1,7 @@
 fastapi
+flask
+pymysql
+python-dotenv
 uvicorn
 sqlalchemy
 pydantic
