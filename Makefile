@@ -1,6 +1,7 @@
 # ==========================================
 # CONFIGURACIÓN
 # ==========================================
+PYTHON_INTERPRETER = python3
 CONTAINER_NAME = mysql-babycare
 MYSQL_ROOT_PASSWORD = root123
 MYSQL_DATABASE = babycare
@@ -16,6 +17,12 @@ SQL_FILE = database/setup_mysql.sql
 requirements:
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 
+# ===========================
+# FASTAPI
+# ===========================
+run-fastapi:
+	@echo "🚀 Iniciando servidor FastAPI..."
+	$(PYTHON_INTERPRETER) -m uvicorn app.fastapi_app:app --reload --host 0.0.0.0 --port 8000
 
 # Levantar el contenedor MySQL
 run:
@@ -37,8 +44,8 @@ db-setup:
 	docker exec -i $(CONTAINER_NAME) sh -c "mysql -u root -p$(MYSQL_ROOT_PASSWORD) $(MYSQL_DATABASE) < /setup.sql"
 	@echo "✅ Base de datos creada y configurada."
 
-# Ejecuta todo: contenedor + script de base de datos
-setup: requirements run db-setup
+# Ejecuta todo: contenedor + script de base de datos + fastapi
+setup: requirements run db-setup run-fastapi
 	@echo "🎉 Entorno backend configurado con éxito."
 
 # Conectarse al contenedor MySQL

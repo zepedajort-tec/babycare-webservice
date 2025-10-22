@@ -7,3 +7,4 @@ sqlalchemy
 pydantic
 requests
 flake8
+cryptography
