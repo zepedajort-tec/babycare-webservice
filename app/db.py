@@ -10,5 +10,6 @@ DB_CONFIG = {
     "cursorclass": pymysql.cursors.DictCursor
 }
 
+
 def get_connection():
     return pymysql.connect(**DB_CONFIG)

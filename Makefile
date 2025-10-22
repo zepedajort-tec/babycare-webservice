@@ -72,7 +72,7 @@ clean:
 
 ## Lint using flake8
 lint:
-	flake8 webservice
+	flake8 app
 
 
 .DEFAULT_GOAL := help

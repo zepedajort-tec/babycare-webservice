@@ -1,5 +1,6 @@
 from app.db import get_connection
 
+
 def get_all_babies():
     conn = get_connection()
     with conn.cursor() as cursor:

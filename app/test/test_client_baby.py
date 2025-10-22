@@ -3,10 +3,12 @@ import json
 
 BASE_URL = "http://127.0.0.1:8000/babies"
 
+
 def pretty_print(response):
     try:
         print(json.dumps(response.json(), indent=4, ensure_ascii=False))
     except Exception as e:
+        print(e)
         print("Error al decodificar respuesta:", response.text)
 
 
@@ -76,4 +78,5 @@ if __name__ == "__main__":
         # 5. Eliminar
         test_delete_baby(first_id)
     else:
-        print("\nNo se encontraron registros para probar los endpoints individuales.")
+        print("\nNo se encontraron registros "
+              "para probar los endpoints individuales.")
