@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from app import crud_babies
 from app import crud_parents
-
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module='urllib3')
 app = FastAPI(title="BabyCare API (FastAPI)", version="1.1")
 
 
