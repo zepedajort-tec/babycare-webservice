@@ -83,6 +83,11 @@ INSERT INTO parents (name, email, phone, relation)
 VALUES (p_name, p_email, p_phone, p_relation);
 END$$
 
+CREATE PROCEDURE sp_read_parent(IN p_id INT)
+BEGIN
+SELECT * FROM parents as p where p.id = p_id;
+END$$
+
 CREATE PROCEDURE sp_read_parents()
 BEGIN
 SELECT * FROM parents;
