@@ -22,7 +22,8 @@ def test_create_parent():
     data = {
         "name": "Ricardo Perez",
         "email": "ricardo.perez@example.com",
-        "phone": "555-123-4567"
+        "phone": "555-123-4567",
+        "relation": "Father"  # Campo 'relation' añadido
     }
     r = requests.post(BASE_URL, json=data)
     print("Status:", r.status_code)
@@ -52,7 +53,8 @@ def test_update_parent(parent_id: int):
     data = {
         "name": "Ricardo Perez Actualizado",
         "email": "ricardo.a@example.com",
-        "phone": "555-999-8888"
+        "phone": "555-999-8888",
+        "relation": "Guardian"  # Campo 'relation' actualizado
     }
     r = requests.put(f"{BASE_URL}/{parent_id}", json=data)
     print("Status:", r.status_code)
