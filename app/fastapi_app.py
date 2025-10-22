@@ -21,7 +21,10 @@ def get_baby(baby_id: int):
 def create_baby(baby: dict):
     try:
         return crud_babies.create_baby(
-            baby["name"], baby["age_months"], baby["weight"], baby["height"]
+            baby["name"],
+            baby["age_months"],
+            baby["weight"],
+            baby["height"]
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -1,7 +1,7 @@
 import requests
 import json
 
-BASE_URL = "http://127.0.0.1:8000/babies"
+BASE_URL = "https://zany-goggles-v6rrq7j5px47fpq5r-8000.app.github.dev/babies"
 
 
 def pretty_print(response):
@@ -26,7 +26,7 @@ def test_create_baby():
 
 
 def test_get_all_babies():
-    print("\n📋 Obteniendo todos los bebés...")
+    print("\nObteniendo todos los bebés...")
     r = requests.get(BASE_URL)
     print("Status:", r.status_code)
     pretty_print(r)
@@ -34,7 +34,7 @@ def test_get_all_babies():
 
 
 def test_get_baby_by_id(baby_id):
-    print(f"\n🔍 Consultando bebé con ID {baby_id}...")
+    print(f"\nConsultando bebé con ID {baby_id}...")
     r = requests.get(f"{BASE_URL}/{baby_id}")
     print("Status:", r.status_code)
     pretty_print(r)
