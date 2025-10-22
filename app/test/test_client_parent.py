@@ -87,6 +87,7 @@ if __name__ == "__main__":
         test_get_parent_by_id(first_id)
         # 5. Eliminar
         test_delete_parent(first_id)
+        test_get_parent_by_id(first_id)
     else:
         print("\nNo se encontraron registros "
               "para probar los endpoints individuales.")
