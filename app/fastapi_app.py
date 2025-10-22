@@ -43,3 +43,55 @@ def update_baby(baby_id: int, baby: dict):
 @app.delete("/babies/{baby_id}")
 def delete_baby(baby_id: int):
     return crud_babies.delete_baby(baby_id)
+
+# ==========================================================
+# RUTAS PARA LA ENTIDAD 'PARENTS'
+# ==========================================================
+
+@app.get("/parents")
+def get_parents():
+    """Obtiene todos los padres/madres."""
+    return crud_parents.get_all_parents()
+
+
+@app.get("/parents/{parent_id}")
+def get_parent(parent_id: int):
+    """Consulta un padre/madre por ID."""
+    result = crud_parents.get_parent_by_id(parent_id)
+    # Reutilizamos el manejo de error 404 (Not Found)
+    if not result or "message" in result:
+        raise HTTPException(status_code=404, detail="Parent not found")
+    return result
+
+
+@app.post("/parents")
+def create_parent(parent: dict):
+    """Crea un nuevo padre/madre. Se asume que incluye el campo 'relation'."""
+    try:
+        return crud_parents.create_parent(
+            parent["name"],
+            parent["email"],
+            parent["phone"],
+            parent["relation"]  # Incluye el nuevo campo 'relation'
+        )
+    except Exception as e:
+        # En caso de errores en la base de datos o campos faltantes
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.put("/parents/{parent_id}")
+def update_parent(parent_id: int, parent: dict):
+    """Actualiza un padre/madre existente. Se asume que incluye 'relation'."""
+    return crud_parents.update_parent(
+        parent_id,
+        parent["name"],
+        parent["email"],
+        parent["phone"],
+        parent["relation"]  # Incluye el nuevo campo 'relation'
+    )
+
+
+@app.delete("/parents/{parent_id}")
+def delete_parent(parent_id: int):
+    """Elimina un padre/madre por ID."""
+    return crud_parents.delete_parent(parent_id)
