@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from app import crud_babies
+from app import crud_parents
 
 app = FastAPI(title="BabyCare API (FastAPI)", version="1.1")
 
