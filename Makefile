@@ -12,6 +12,11 @@ SQL_FILE = database/setup_mysql.sql
 # TAREAS
 # ==========================================
 
+## Install Python Dependencies
+requirements:
+	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+
+
 # Levantar el contenedor MySQL
 run:
 	@echo "🚀 Iniciando contenedor MySQL..."
@@ -33,7 +38,7 @@ db-setup:
 	@echo "✅ Base de datos creada y configurada."
 
 # Ejecuta todo: contenedor + script de base de datos
-setup: run db-setup
+setup: requirements run db-setup
 	@echo "🎉 Entorno backend configurado con éxito."
 
 # Conectarse al contenedor MySQL
@@ -57,11 +62,6 @@ clean:
 	@echo "🧹 Eliminando contenedor y datos..."
 	docker rm -f $(CONTAINER_NAME)
 	@echo "✅ Contenedor eliminado."
-
-
-## Install Python Dependencies
-requirements:
-	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 
 ## Lint using flake8
 lint:
