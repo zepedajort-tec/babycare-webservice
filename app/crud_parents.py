@@ -27,31 +27,31 @@ def get_parent_by_id(parent_id: int):
     return result if result else {"message": "Parent not found"}
 
 
-def create_parent(name, email, phone):
+def create_parent(name, email, phone, relation):
     """
-    Crea un nuevo registro de padre/madre.
+    Crea un nuevo registro de padre/madre, incluyendo el campo 'relation'.
     Llama al procedimiento almacenado 'sp_create_parent'.
-    Asume que los campos son 'name', 'email' y 'phone'.
+    Asume que los campos son 'name', 'email', 'phone' y 'relation'.
     """
     conn = get_connection()
     with conn.cursor() as cursor:
-        # Los parámetros deben coincidir con la definición de tu SP
-        cursor.callproc("sp_create_parent", (name, email, phone))
+        # ¡IMPORTANTE! Se añade 'relation' a la lista de parámetros
+        cursor.callproc("sp_create_parent", (name, email, phone, relation))
         conn.commit()
     conn.close()
     return {"message": "Parent created successfully"}
 
 
-def update_parent(id, name, email, phone):
+def update_parent(id, name, email, phone, relation):
     """
-    Actualiza un registro de padre/madre existente.
+    Actualiza un registro de padre/madre existente, incluyendo el campo 'relation'.
     Llama al procedimiento almacenado 'sp_update_parent'.
-    Asume que los campos son 'id', 'name', 'email' y 'phone'.
+    Asume que los campos son 'id', 'name', 'email', 'phone' y 'relation'.
     """
     conn = get_connection()
     with conn.cursor() as cursor:
-        # Los parámetros deben coincidir con la definición de tu SP
-        cursor.callproc("sp_update_parent", (id, name, email, phone))
+        # ¡IMPORTANTE! Se añade 'relation' a la lista de parámetros
+        cursor.callproc("sp_update_parent", (id, name, email, phone, relation))
         conn.commit()
     conn.close()
     return {"message": "Parent updated successfully"}
