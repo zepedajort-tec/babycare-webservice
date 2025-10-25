@@ -105,13 +105,13 @@ def delete_parent(parent_id: int):
 
 @app.get("/records")
 def get_records():
-    """Obtiene todos los estados."""
+    """Obtiene todos los registros."""
     return crud_records.get_all_records()
 
 
 @app.get("/records/{record_id}")
 def get_record(record_id: int):
-    """Consulta un estado por ID."""
+    """Consulta un registro por ID."""
     result = crud_records.get_record_by_id(record_id)
     # Reutilizamos el manejo de error 404 (Not Found)
     if not result or "message" in result:
@@ -121,7 +121,7 @@ def get_record(record_id: int):
 
 @app.post("/records")
 def create_record(record: dict):
-    """Crea un nuevo estado. Se asume que incluye el campo 'relation'."""
+    """Crea un nuevo registro. Se asume que incluye el campo 'relation'."""
     try:
         return crud_records.create_record(
             record["babyid"],
@@ -136,7 +136,7 @@ def create_record(record: dict):
 
 @app.put("/records/{record_id}")
 def update_record(record_id: int, record: dict):
-    """Actualiza un record existente. Se asume que incluye 'relation'."""
+    """Actualiza un registro existente. Se asume que incluye 'relation'."""
     return crud_records.update_record(
         record_id,
         record["babyid"],
@@ -148,5 +148,5 @@ def update_record(record_id: int, record: dict):
 
 @app.delete("/records/{record_id}")
 def delete_record(record_id: int):
-    """Elimina el estado por ID."""
+    """Elimina el registro por ID."""
     return crud_records.delete_record(record_id)
