@@ -121,7 +121,7 @@ FROM health_records h
          JOIN baby_profiles b ON b.id = h.baby_id;
 END$$
 
-CREATE PROCEDURE sp_update_health(IN p_id INT, IN p_date DATE, IN p_vaccine VARCHAR(100), IN p_notes TEXT)
+CREATE PROCEDURE sp_update_health(IN p_id INT, IN p_baby_id INT,IN p_date DATE, IN p_vaccine VARCHAR(100), IN p_notes TEXT)
 BEGIN
 UPDATE health_records
 SET date = p_date, vaccine = p_vaccine, notes = p_notes
