@@ -65,7 +65,7 @@ if __name__ == "__main__":
     print("Iniciando pruebas del API BabyCare...\n")
 
     # 1. Crear registro
-    test_create_baby()
+    test_create_record()
 
     # 2. Leer todos
     babies = test_get_all_records()
