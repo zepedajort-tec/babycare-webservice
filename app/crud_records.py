@@ -27,10 +27,10 @@ def create_record(babyid, date, vaccine, notes):
     return {"message": "Record created successfully"}
 
 
-def update_record(id, date, vaccine, notes):
+def update_record(id,babyid,date, vaccine, notes):
     conn = get_connection()
     with conn.cursor() as cursor:
-        cursor.callproc("sp_update_health", (id,date, vaccine, records))
+        cursor.callproc("sp_update_health", (id,babyid,date, vaccine, notes))
         conn.commit()
     conn.close()
     return {"message": "Record updated successfully"}
