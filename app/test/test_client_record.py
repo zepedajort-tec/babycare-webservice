@@ -14,7 +14,7 @@ def pretty_print(response):
 
 
 def test_create_record():
-    print("Creando nuevo estado...")
+    print("Creando nuevo registro...")
     data = {
         "babyid": 100666,
         "date": "1984-10-31",
@@ -27,7 +27,7 @@ def test_create_record():
 
 
 def test_get_all_records():
-    print("\nObteniendo todos los estados...")
+    print("\nObteniendo todos los registros...")
     r = requests.get(BASE_URL)
     print("Status:", r.status_code)
     pretty_print(r)
@@ -35,14 +35,14 @@ def test_get_all_records():
 
 
 def test_get_record_by_id(record_id):
-    print(f"\nConsultando estado con ID {record_id}...")
+    print(f"\nConsultando registro con ID {record_id}...")
     r = requests.get(f"{BASE_URL}/{record_id}")
     print("Status:", r.status_code)
     pretty_print(r)
 
 
 def test_update_record(record_id):
-    print(f"\nActualizando estado con ID {record_id}...")
+    print(f"\nActualizando registro con ID {record_id}...")
     data = {
         "babyid": 100777,
         "date": "1984-12-24",
@@ -55,7 +55,7 @@ def test_update_record(record_id):
 
 
 def test_delete_record(record_id):
-    print(f"\nEliminando estado con ID {record_id}...")
+    print(f"\nEliminando registro con ID {record_id}...")
     r = requests.delete(f"{BASE_URL}/{record_id}")
     print("Status:", r.status_code)
     pretty_print(r)
