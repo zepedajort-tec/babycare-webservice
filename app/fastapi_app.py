@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from app import crud_babies
 from app import crud_parents
+from app import crud_records
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='urllib3')
 app = FastAPI(title="BabyCare API (FastAPI)", version="1.1")
@@ -97,3 +98,55 @@ def update_parent(parent_id: int, parent: dict):
 def delete_parent(parent_id: int):
     """Elimina un padre/madre por ID."""
     return crud_parents.delete_parent(parent_id)
+
+# ==========================================================
+# RUTAS PARA LA ENTIDAD 'RECORDS'
+# ==========================================================
+
+@app.get("/records")
+def get_records():
+    """Obtiene todos los estados."""
+    return crud_records.get_all_records()
+
+
+@app.get("/records/{record_id}")
+def get_record(record_id: int):
+    """Consulta un estado por ID."""
+    result = crud_records.get_record_by_id(record_id)
+    # Reutilizamos el manejo de error 404 (Not Found)
+    if not result or "message" in result:
+        raise HTTPException(status_code=404, detail="Record not found")
+    return result
+
+
+@app.post("/records")
+def create_record(record: dict):
+    """Crea un nuevo estado. Se asume que incluye el campo 'relation'."""
+    try:
+        return crud_records.create_record(
+            record["babyid"],
+            record["date"],
+            parent["vaccine"],
+            parent["notes"]  # Incluye el nuevo campo 'relation'
+        )
+    except Exception as e:
+        # En caso de errores en la base de datos o campos faltantes
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.put("/records/{record_id}")
+def update_parent(record_id: int, record: dict):
+    """Actualiza un record existente. Se asume que incluye 'relation'."""
+    return crud_records.update_record(
+        record_id,
+        parent["babyid"],
+        parent["date"],
+        parent["vaccine"],
+        parent["notes"]  # Incluye el nuevo campo 'relation'
+    )
+
+
+@app.delete("/records/{record_id}")
+def delete_parent(record: int):
+    """Elimina el estado por ID."""
+    return crud_records.delete_record(record_id)
