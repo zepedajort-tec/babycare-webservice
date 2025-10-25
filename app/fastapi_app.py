@@ -147,6 +147,6 @@ def update_record(record_id: int, record: dict):
 
 
 @app.delete("/records/{record_id}")
-def delete_record(record: int):
+def delete_record(record_int: int):
     """Elimina el estado por ID."""
     return crud_records.delete_record(record_id)
