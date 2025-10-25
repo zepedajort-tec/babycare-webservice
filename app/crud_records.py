@@ -12,7 +12,7 @@ def get_all_records():
 def get_record_by_id(record_id: int):
     conn = get_connection()
     with conn.cursor() as cursor:
-        cursor.callproc("sp_read_health", (record_id,))
+        cursor.callproc("sp_read_health_by_id", (record_id,))
         result = cursor.fetchone()  # uno solo
     conn.close()
     return result if result else {"message": "Record not found"}
