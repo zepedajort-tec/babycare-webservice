@@ -16,7 +16,7 @@ def pretty_print(response):
 def test_create_record():
     print("Creando nuevo estado...")
     data = {
-        "babyid": 000666,
+        "babyid": 100666,
         "fecha": "1984-10-31",
         "vaccine": "poliomelitis",
         "notes": "feliz halloween"
@@ -44,7 +44,7 @@ def test_get_record_by_id(record_id):
 def test_update_record(record_id):
     print(f"\nActualizando estado con ID {record_id}...")
     data = {
-        "babyid": 000777,
+        "babyid": 100777,
         "date": "24-12-1984",
         "vaccine": "tosferina",
         "notes": "jojojo"
