@@ -126,8 +126,8 @@ def create_record(record: dict):
         return crud_records.create_record(
             record["babyid"],
             record["date"],
-            parent["vaccine"],
-            parent["notes"]  # Incluye el nuevo campo 'relation'
+            record["vaccine"],
+            record["notes"]  # Incluye el nuevo campo 'relation'
         )
     except Exception as e:
         # En caso de errores en la base de datos o campos faltantes
@@ -135,7 +135,7 @@ def create_record(record: dict):
 
 
 @app.put("/records/{record_id}")
-def update_parent(record_id: int, record: dict):
+def update_record(record_id: int, record: dict):
     """Actualiza un record existente. Se asume que incluye 'relation'."""
     return crud_records.update_record(
         record_id,
