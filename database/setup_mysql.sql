@@ -121,6 +121,18 @@ FROM health_records h
          JOIN baby_profiles b ON b.id = h.baby_id;
 END$$
 
+-- ... (después de sp_read_health) ...
+
+CREATE PROCEDURE sp_read_health_by_id(IN p_id INT)
+BEGIN
+SELECT h.*, b.name AS baby_name
+FROM health_records h
+         JOIN baby_profiles b ON b.id = h.baby_id
+WHERE h.id = p_id;
+END$$
+
+-- ... (antes de sp_update_health) ...
+
 CREATE PROCEDURE sp_update_health(IN p_id INT, IN p_baby_id INT,IN p_date DATE, IN p_vaccine VARCHAR(100), IN p_notes TEXT)
 BEGIN
 UPDATE health_records
