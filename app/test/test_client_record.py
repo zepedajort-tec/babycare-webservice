@@ -54,7 +54,7 @@ def test_update_record(record_id):
     pretty_print(r)
 
 
-def test_delete_baby(record_id):
+def test_delete_record(record_id):
     print(f"\nEliminando estado con ID {record_id}...")
     r = requests.delete(f"{BASE_URL}/{record_id}")
     print("Status:", r.status_code)
