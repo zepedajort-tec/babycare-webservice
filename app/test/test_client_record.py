@@ -68,10 +68,10 @@ if __name__ == "__main__":
     test_create_record()
 
     # 2. Leer todos
-    babies = test_get_all_records()
+    records = test_get_all_records()
 
-    if babies and isinstance(babies, list) and len(babies) > 0:
-        first_id = babies[0]["id"]
+    if records and isinstance(records, list) and len(records) > 0:
+        first_id = records[0]["id"]
         # 3. Leer uno por ID
         test_get_record_by_id(first_id)
         # 4. Actualizar
