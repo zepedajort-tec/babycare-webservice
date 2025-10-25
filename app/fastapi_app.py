@@ -139,10 +139,10 @@ def update_record(record_id: int, record: dict):
     """Actualiza un record existente. Se asume que incluye 'relation'."""
     return crud_records.update_record(
         record_id,
-        parent["babyid"],
-        parent["date"],
-        parent["vaccine"],
-        parent["notes"]  # Incluye el nuevo campo 'relation'
+        record["babyid"],
+        record["date"],
+        record["vaccine"],
+        record["notes"]  # Incluye el nuevo campo 'relation'
     )
 
 
