@@ -2,7 +2,7 @@
 import requests
 import json
 
-BASE_URL = "https://paranormal-spooky-graveyard-g4p6xr796jvpf9wjx-8000.app.github.dev/records"
+BASE_URL = "https://noxious-spooky-cape-5g95vrx65wrv374qx-8000.app.github.dev/records"
 
 
 def pretty_print(response):
