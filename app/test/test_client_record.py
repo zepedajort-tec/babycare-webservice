@@ -17,7 +17,7 @@ def test_create_record():
     print("Creando nuevo estado...")
     data = {
         "babyid": 100666,
-        "fecha": "1984-10-31",
+        "date": "1984-10-31",
         "vaccine": "poliomelitis",
         "notes": "feliz halloween"
     }
@@ -45,7 +45,7 @@ def test_update_record(record_id):
     print(f"\nActualizando estado con ID {record_id}...")
     data = {
         "babyid": 100777,
-        "date": "24-12-1984",
+        "date": "1984-12-24",
         "vaccine": "tosferina",
         "notes": "jojojo"
     }
