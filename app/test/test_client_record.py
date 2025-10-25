@@ -16,10 +16,10 @@ def pretty_print(response):
 def test_create_record():
     print("Creando nuevo estado...")
     data = {
-        "id bebe": "000666",
-        "fecha": 31-10-1984,
-        "vacuna": "poliomelitis",
-        "notas": "feliz halloween"
+        "babyid": "000666",
+        "fecha": "1984-10-31",
+        "vaccine": "poliomelitis",
+        "notes": "feliz halloween"
     }
     r = requests.post(BASE_URL, json=data)
     print("Status:", r.status_code)
@@ -44,10 +44,10 @@ def test_get_record_by_id(record_id):
 def test_update_record(record_id):
     print(f"\nActualizando estado con ID {record_id}...")
     data = {
-        "id bebe": "000777",
-        "fecha": 24-12-1984,
-        "vacuna": "tosferina",
-        "notas": "jojojo"
+        "babyid": "000777",
+        "date": "24-12-1984",
+        "vaccine": "tosferina",
+        "notes": "jojojo"
     }
     r = requests.put(f"{BASE_URL}/{record_id}", json=data)
     print("Status:", r.status_code)
