@@ -1,6 +1,6 @@
 import requests
 import json
-from api_urls import RECORDS_URL, LOGIN_URL, REGISTER_URL
+from api_urls import RECORDS_URL, BABIES_URL, LOGIN_URL, REGISTER_URL
 
 def pretty_print(response):
     try:
@@ -24,6 +24,14 @@ def get_token():
         r = requests.post(REGISTER_URL, json=reg_data)
     pretty_print(r)
     return r.json()["access_token"]
+
+def get_first_baby_id(token):
+    headers = {"Authorization": f"Bearer {token}"}
+    r = requests.get(BABIES_URL, headers=headers)
+    babies = r.json()
+    if babies and isinstance(babies, list) and len(babies) > 0:
+        return babies[0]["id"]
+    return None
 
 def test_create_record(token, baby_id):
     print("Creando nuevo registro...")
@@ -77,14 +85,18 @@ if __name__ == "__main__":
     print("Iniciando pruebas del API BabyCare / records ...\n")
 
     token = get_token()
-    baby_id = 1  # Cambia este ID por uno existente según tus tests
-    test_create_record(token, baby_id)
-    records = test_get_all_records(token)
-
-    if records and isinstance(records, list) and len(records) > 0:
-        first_id = records[0]["id"]
-        test_get_record_by_id(token, first_id)
-        test_update_record(token, first_id, baby_id)
-        test_delete_record(token, first_id)
+    # 1. Obtén un baby_id válido
+    baby_id = get_first_baby_id(token)
+    if not baby_id:
+        print("\nNo hay bebés registrados para realizar pruebas de health_records. Registra como mínimo un bebé y vuelve a intentar.")
     else:
-        print("\nNo se encontraron registros para probar los endpoints individuales.")
+        test_create_record(token, baby_id)
+        records = test_get_all_records(token)
+
+        if records and isinstance(records, list) and len(records) > 0:
+            first_id = records[0]["id"]
+            test_get_record_by_id(token, first_id)
+            test_update_record(token, first_id, baby_id)
+            test_delete_record(token, first_id)
+        else:
+            print("\nNo se encontraron registros para probar los endpoints individuales.")

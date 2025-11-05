@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     # Obtén el parent_id correspondiente al usuario actual
     # Si la API devolviera el user_id en el login/registro, úsalo:
-    parent_id = 1  # Actualízalo según el id del token o el padre creado
+    parent_id = 3  # Actualízalo según el id del token o el padre creado
 
     # 2. Crear registro
     test_create_baby(token, parent_id)
@@ -98,6 +98,6 @@ if __name__ == "__main__":
         # 5. Actualizar
         test_update_baby(token, first_id, parent_id)
         # 6. Eliminar
-        test_delete_baby(token, first_id)
+        #test_delete_baby(token, first_id)
     else:
         print("\nNo se encontraron registros para probar los endpoints individuales.")

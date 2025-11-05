@@ -1,4 +1,4 @@
-BASE_URL = "https://zany-goggles-v6rrq7j5px47fpq5r-8000.app.github.dev"
+BASE_URL = "https://probable-space-waffle-wr55gjq4vq99f5qr7-8000.app.github.dev"
 
 BABIES_URL       = f"{BASE_URL}/babies"
 PARENTS_URL      = f"{BASE_URL}/parents"

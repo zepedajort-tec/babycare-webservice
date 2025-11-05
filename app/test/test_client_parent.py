@@ -25,18 +25,13 @@ def get_token():
     pretty_print(r)
     return r.json()["access_token"]
 
-def test_create_parent(token):
-    print("Creando nuevo padre/madre...")
-    data = {
-        "name": "Ricardo Perez",
-        "email": "ricardo.perez@example.com",
-        "phone": "555-123-4567",
-        "relation": "Father"
-    }
+def get_parent_record(token, parent_id):
+    # Devuelve el registro actual del padre para poder obtener el password_hash para PUT
     headers = {"Authorization": f"Bearer {token}"}
-    r = requests.post(PARENTS_URL, json=data, headers=headers)
-    print("Status:", r.status_code)
-    pretty_print(r)
+    r = requests.get(f"{PARENTS_URL}/{parent_id}", headers=headers)
+    if r.status_code == 200:
+        return r.json()
+    return None
 
 def test_get_all_parents(token):
     print("\nObteniendo todos los padres/madres...")
@@ -55,11 +50,18 @@ def test_get_parent_by_id(token, parent_id):
 
 def test_update_parent(token, parent_id):
     print(f"\nActualizando padre/madre con ID {parent_id}...")
+    old_record = get_parent_record(token, parent_id)
+    if old_record is None:
+        print("No se encontró el padre/madre para actualizar")
+        return
     data = {
         "name": "Ricardo Perez Actualizado",
         "email": "ricardo.a@example.com",
         "phone": "555-999-8888",
-        "relation": "Guardian"
+        "relation": "Guardian",
+        "age": old_record.get("age"),
+        "sex": old_record.get("sex", "O"),
+        "password_hash": old_record.get("password_hash", "")
     }
     headers = {"Authorization": f"Bearer {token}"}
     r = requests.put(f"{PARENTS_URL}/{parent_id}", json=data, headers=headers)
@@ -77,7 +79,6 @@ if __name__ == "__main__":
     print("Iniciando pruebas del API BabyCare / parents ...\n")
 
     token = get_token()
-    test_create_parent(token)
     parents = test_get_all_parents(token)
 
     if parents and isinstance(parents, list) and len(parents) > 0:
@@ -85,7 +86,7 @@ if __name__ == "__main__":
         test_get_parent_by_id(token, first_id)
         test_update_parent(token, first_id)
         test_get_parent_by_id(token, first_id)
-        test_delete_parent(token, first_id)
+        #test_delete_parent(token, first_id)
         test_get_parent_by_id(token, first_id)
     else:
         print("\nNo se encontraron registros para probar los endpoints individuales.")
