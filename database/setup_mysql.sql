@@ -7,18 +7,23 @@ USE babycare;
 -- ===========================================
 CREATE TABLE IF NOT EXISTS baby_profiles (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    parent_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
     age_months INT NOT NULL,
     weight FLOAT,
-    height FLOAT
-    );
+    height FLOAT,
+    FOREIGN KEY (parent_id) REFERENCES parents(id) ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS parents (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100),
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
     phone VARCHAR(20),
-    relation VARCHAR(50)
+    relation VARCHAR(50),
+    age INT,
+    sex ENUM('M', 'F', 'O') DEFAULT 'O',
+    password_hash VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS health_records (
@@ -41,20 +46,26 @@ CREATE TABLE IF NOT EXISTS development_tips (
 -- PROCEDIMIENTOS ALMACENADOS CRUD
 -- ===========================================
 
+DELIMITER $$
+
 -- ========================
 -- BABY_PROFILES
 -- ========================
-DELIMITER $$
-
-CREATE PROCEDURE sp_create_baby(IN p_name VARCHAR(100), IN p_age INT, IN p_weight FLOAT, IN p_height FLOAT)
+CREATE PROCEDURE sp_create_baby(
+    IN p_parent_id INT,
+    IN p_name VARCHAR(100),
+    IN p_age INT,
+    IN p_weight FLOAT,
+    IN p_height FLOAT
+)
 BEGIN
-INSERT INTO baby_profiles (name, age_months, weight, height)
-VALUES (p_name, p_age, p_weight, p_height);
+INSERT INTO baby_profiles (parent_id, name, age_months, weight, height)
+VALUES (p_parent_id, p_name, p_age, p_weight, p_height);
 END$$
 
 CREATE PROCEDURE sp_read_baby(IN p_id INT)
 BEGIN
-SELECT * FROM baby_profiles as bp where bp.id = p_id;
+SELECT * FROM baby_profiles WHERE id = p_id;
 END$$
 
 CREATE PROCEDURE sp_read_babies()
@@ -62,10 +73,26 @@ BEGIN
 SELECT * FROM baby_profiles;
 END$$
 
-CREATE PROCEDURE sp_update_baby(IN p_id INT, IN p_name VARCHAR(100), IN p_age INT, IN p_weight FLOAT, IN p_height FLOAT)
+CREATE PROCEDURE sp_read_babies_by_parent(IN p_parent_id INT)
+BEGIN
+SELECT * FROM baby_profiles WHERE parent_id = p_parent_id;
+END$$
+
+CREATE PROCEDURE sp_update_baby(
+    IN p_id INT,
+    IN p_parent_id INT,
+    IN p_name VARCHAR(100),
+    IN p_age INT,
+    IN p_weight FLOAT,
+    IN p_height FLOAT
+)
 BEGIN
 UPDATE baby_profiles
-SET name = p_name, age_months = p_age, weight = p_weight, height = p_height
+SET parent_id = p_parent_id,
+    name = p_name,
+    age_months = p_age,
+    weight = p_weight,
+    height = p_height
 WHERE id = p_id;
 END$$
 
@@ -77,26 +104,57 @@ END$$
 -- ========================
 -- PARENTS
 -- ========================
-CREATE PROCEDURE sp_create_parent(IN p_name VARCHAR(100), IN p_email VARCHAR(100), IN p_phone VARCHAR(20), IN p_relation VARCHAR(50))
+
+CREATE PROCEDURE sp_get_parent_by_email(IN p_email VARCHAR(100))
 BEGIN
-INSERT INTO parents (name, email, phone, relation)
-VALUES (p_name, p_email, p_phone, p_relation);
+SELECT id, name, email, phone, relation, age, sex, password_hash
+FROM parents
+WHERE email = p_email;
+END;
+
+CREATE PROCEDURE sp_create_parent(
+    IN p_name VARCHAR(100),
+    IN p_email VARCHAR(100),
+    IN p_phone VARCHAR(20),
+    IN p_relation VARCHAR(50),
+    IN p_age INT,
+    IN p_sex ENUM('M','F','O'),
+    IN p_password_hash VARCHAR(255)
+        )
+BEGIN
+INSERT INTO parents (name, email, phone, relation, age, sex, password_hash)
+VALUES (p_name, p_email, p_phone, p_relation, p_age, p_sex, p_password_hash);
 END$$
 
 CREATE PROCEDURE sp_read_parent(IN p_id INT)
 BEGIN
-SELECT * FROM parents as p where p.id = p_id;
+SELECT id, name, email, phone, relation, age, sex FROM parents WHERE id = p_id;
 END$$
 
 CREATE PROCEDURE sp_read_parents()
 BEGIN
-SELECT * FROM parents;
+SELECT id, name, email, phone, relation, age, sex FROM parents;
 END$$
 
-CREATE PROCEDURE sp_update_parent(IN p_id INT, IN p_name VARCHAR(100), IN p_email VARCHAR(100), IN p_phone VARCHAR(20), IN p_relation VARCHAR(50))
+CREATE PROCEDURE sp_update_parent(
+    IN p_id INT,
+    IN p_name VARCHAR(100),
+    IN p_email VARCHAR(100),
+    IN p_phone VARCHAR(20),
+    IN p_relation VARCHAR(50),
+    IN p_age INT,
+    IN p_sex ENUM('M','F','O'),
+    IN p_password_hash VARCHAR(255)
+        )
 BEGIN
 UPDATE parents
-SET name = p_name, email = p_email, phone = p_phone, relation = p_relation
+SET name = p_name,
+    email = p_email,
+    phone = p_phone,
+    relation = p_relation,
+    age = p_age,
+    sex = p_sex,
+    password_hash = p_password_hash
 WHERE id = p_id;
 END$$
 
@@ -121,8 +179,6 @@ FROM health_records h
          JOIN baby_profiles b ON b.id = h.baby_id;
 END$$
 
--- ... (después de sp_read_health) ...
-
 CREATE PROCEDURE sp_read_health_by_id(IN p_id INT)
 BEGIN
 SELECT h.*, b.name AS baby_name
@@ -131,9 +187,7 @@ FROM health_records h
 WHERE h.id = p_id;
 END$$
 
--- ... (antes de sp_update_health) ...
-
-CREATE PROCEDURE sp_update_health(IN p_id INT, IN p_baby_id INT,IN p_date DATE, IN p_vaccine VARCHAR(100), IN p_notes TEXT)
+CREATE PROCEDURE sp_update_health(IN p_id INT, IN p_baby_id INT, IN p_date DATE, IN p_vaccine VARCHAR(100), IN p_notes TEXT)
 BEGIN
 UPDATE health_records
 SET date = p_date, vaccine = p_vaccine, notes = p_notes

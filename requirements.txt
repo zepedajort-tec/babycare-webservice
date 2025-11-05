@@ -8,3 +8,5 @@ pydantic
 requests
 flake8
 cryptography
+bcrypt
+python-jose

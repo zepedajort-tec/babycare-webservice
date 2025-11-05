@@ -1,9 +1,6 @@
-#k
 import requests
 import json
-
-BASE_URL = "https://noxious-spooky-cape-5g95vrx65wrv374qx-8000.app.github.dev/records"
-
+from api_urls import RECORDS_URL, LOGIN_URL, REGISTER_URL
 
 def pretty_print(response):
     try:
@@ -12,72 +9,82 @@ def pretty_print(response):
         print(e)
         print("Error al decodificar respuesta:", response.text)
 
+def get_token():
+    data = {
+        "email": "recordtest@email.com",
+        "password": "Test1234"
+    }
+    r = requests.post(LOGIN_URL, json=data)
+    if r.status_code == 404:
+        reg_data = {
+            "name": "Prueba Registro",
+            "email": data["email"],
+            "password": data["password"]
+        }
+        r = requests.post(REGISTER_URL, json=reg_data)
+    pretty_print(r)
+    return r.json()["access_token"]
 
-def test_create_record():
+def test_create_record(token, baby_id):
     print("Creando nuevo registro...")
     data = {
-        "babyid": 100666,
-        "date": "1984-10-31",
+        "baby_id": baby_id,
+        "date": "2022-10-31",
         "vaccine": "poliomelitis",
         "notes": "feliz halloween"
     }
-    r = requests.post(BASE_URL, json=data)
+    headers = {"Authorization": f"Bearer {token}"}
+    r = requests.post(RECORDS_URL, json=data, headers=headers)
     print("Status:", r.status_code)
     pretty_print(r)
 
-
-def test_get_all_records():
+def test_get_all_records(token):
     print("\nObteniendo todos los registros...")
-    r = requests.get(BASE_URL)
+    headers = {"Authorization": f"Bearer {token}"}
+    r = requests.get(RECORDS_URL, headers=headers)
     print("Status:", r.status_code)
     pretty_print(r)
     return r.json()
 
-
-def test_get_record_by_id(record_id):
+def test_get_record_by_id(token, record_id):
     print(f"\nConsultando registro con ID {record_id}...")
-    r = requests.get(f"{BASE_URL}/{record_id}")
+    headers = {"Authorization": f"Bearer {token}"}
+    r = requests.get(f"{RECORDS_URL}/{record_id}", headers=headers)
     print("Status:", r.status_code)
     pretty_print(r)
 
-
-def test_update_record(record_id):
+def test_update_record(token, record_id, baby_id):
     print(f"\nActualizando registro con ID {record_id}...")
     data = {
-        "babyid": 100777,
-        "date": "1984-12-24",
+        "baby_id": baby_id,
+        "date": "2022-12-24",
         "vaccine": "tosferina",
         "notes": "jojojo"
     }
-    r = requests.put(f"{BASE_URL}/{record_id}", json=data)
+    headers = {"Authorization": f"Bearer {token}"}
+    r = requests.put(f"{RECORDS_URL}/{record_id}", json=data, headers=headers)
     print("Status:", r.status_code)
     pretty_print(r)
 
-
-def test_delete_record(record_id):
+def test_delete_record(token, record_id):
     print(f"\nEliminando registro con ID {record_id}...")
-    r = requests.delete(f"{BASE_URL}/{record_id}")
+    headers = {"Authorization": f"Bearer {token}"}
+    r = requests.delete(f"{RECORDS_URL}/{record_id}", headers=headers)
     print("Status:", r.status_code)
     pretty_print(r)
-
 
 if __name__ == "__main__":
-    print("Iniciando pruebas del API BabyCare...\n")
+    print("Iniciando pruebas del API BabyCare / records ...\n")
 
-    # 1. Crear registro
-    test_create_record()
-
-    # 2. Leer todos
-    records = test_get_all_records()
+    token = get_token()
+    baby_id = 1  # Cambia este ID por uno existente según tus tests
+    test_create_record(token, baby_id)
+    records = test_get_all_records(token)
 
     if records and isinstance(records, list) and len(records) > 0:
         first_id = records[0]["id"]
-        # 3. Leer uno por ID
-        test_get_record_by_id(first_id)
-        # 4. Actualizar
-        test_update_record(first_id)
-        # 5. Eliminar
-        test_delete_record(first_id)
+        test_get_record_by_id(token, first_id)
+        test_update_record(token, first_id, baby_id)
+        test_delete_record(token, first_id)
     else:
-        print("\nNo se encontraron registros "
-              "para probar los endpoints individuales.")
+        print("\nNo se encontraron registros para probar los endpoints individuales.")

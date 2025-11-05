@@ -1,6 +1,5 @@
 from app.db import get_connection
 
-
 def get_all_babies():
     conn = get_connection()
     with conn.cursor() as cursor:
@@ -9,33 +8,29 @@ def get_all_babies():
     conn.close()
     return result
 
-
 def get_baby_by_id(baby_id: int):
     conn = get_connection()
     with conn.cursor() as cursor:
         cursor.callproc("sp_read_baby", (baby_id,))
-        result = cursor.fetchone()  # uno solo
+        result = cursor.fetchone()
     conn.close()
     return result if result else {"message": "Baby not found"}
 
-
-def create_baby(name, age, weight, height):
+def create_baby(parent_id, name, age_months, weight, height):
     conn = get_connection()
     with conn.cursor() as cursor:
-        cursor.callproc("sp_create_baby", (name, age, weight, height))
+        cursor.callproc("sp_create_baby", (parent_id, name, age_months, weight, height))
         conn.commit()
     conn.close()
     return {"message": "Baby created successfully"}
 
-
-def update_baby(id, name, age, weight, height):
+def update_baby(id, parent_id, name, age_months, weight, height):
     conn = get_connection()
     with conn.cursor() as cursor:
-        cursor.callproc("sp_update_baby", (id, name, age, weight, height))
+        cursor.callproc("sp_update_baby", (id, parent_id, name, age_months, weight, height))
         conn.commit()
     conn.close()
     return {"message": "Baby updated successfully"}
-
 
 def delete_baby(id):
     conn = get_connection()
