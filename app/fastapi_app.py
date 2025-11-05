@@ -3,8 +3,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from app import crud_babies
 from app import crud_parents
 from app import crud_records
-from auth_utils import create_access_token
-from auth_dependency import get_current_user
+from app.auth_utils import create_access_token
+from app.auth_dependency import get_current_user
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='urllib3')
 app = FastAPI(title="BabyCare API (FastAPI)", version="1.2")
