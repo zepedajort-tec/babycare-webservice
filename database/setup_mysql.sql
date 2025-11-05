@@ -5,16 +5,6 @@ USE babycare;
 -- ===========================================
 -- TABLAS
 -- ===========================================
-CREATE TABLE IF NOT EXISTS baby_profiles (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    parent_id INT NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    age_months INT NOT NULL,
-    weight FLOAT,
-    height FLOAT,
-    FOREIGN KEY (parent_id) REFERENCES parents(id) ON DELETE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS parents (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -24,6 +14,16 @@ CREATE TABLE IF NOT EXISTS parents (
     age INT,
     sex ENUM('M', 'F', 'O') DEFAULT 'O',
     password_hash VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS baby_profiles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    parent_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    age_months INT NOT NULL,
+    weight FLOAT,
+    height FLOAT,
+    FOREIGN KEY (parent_id) REFERENCES parents(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS health_records (
