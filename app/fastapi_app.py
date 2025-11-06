@@ -3,10 +3,14 @@ from fastapi import FastAPI, HTTPException, Depends
 from app import crud_babies
 from app import crud_parents
 from app import crud_records
-from app.auth_utils import create_access_token
+from app.auth_utils import create_access_token, verify_jwt_token
 from app.auth_dependency import get_current_user
+from fastapi.security import OAuth2PasswordBearer
+
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='urllib3')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
 app = FastAPI(title="BabyCare API (FastAPI)", version="1.2")
 
 # =======================
@@ -64,6 +68,20 @@ def register_parent(parent: dict):
     token = create_access_token(token_data)
     return {"access_token": token, "token_type": "bearer"}
 
+@app.post("/refresh-token")
+def refresh_token(token: str = Depends(oauth2_scheme)):
+    payload = verify_jwt_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    # Aquí puedes volver a generar el token solo con el user_id/email y lo mismo que el original
+    new_token = create_access_token({
+        "user_id": payload["user_id"],
+        "email": payload["email"],
+        "name": payload["name"]
+    })
+    return {"access_token": new_token, "token_type": "bearer"}
+
 # =======================
 # ENDPOINTS TABLA BABY_PROFILES
 # =======================
@@ -115,7 +133,7 @@ def delete_baby(baby_id: int, user=Depends(get_current_user)):
 def get_parents(user=Depends(get_current_user)):
     return crud_parents.get_all_parents()
 
-@app.get("/parents/by_email/{email}")
+@app.get("/parent/{email}")
 def get_parent_by_email(email: str, user=Depends(get_current_user)):
     result = crud_parents.get_parent_by_email(email)
     if not result:
