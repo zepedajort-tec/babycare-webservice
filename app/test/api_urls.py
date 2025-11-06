@@ -1,4 +1,4 @@
-BASE_URL = "https://probable-space-waffle-wr55gjq4vq99f5qr7-8000.app.github.dev"
+BASE_URL = "https://fluffy-space-computing-machine-q744pg5xvrwqc6r7-8000.app.github.dev"
 
 BABIES_URL       = f"{BASE_URL}/babies"
 PARENTS_URL      = f"{BASE_URL}/parents"

@@ -34,7 +34,7 @@ def login_parent(data: dict):
         "name": parent['name'] if isinstance(parent, dict) else parent[1]
     }
     token = create_access_token(token_data)
-    return {"access_token": token, "token_type": "bearer"}
+    return {"access_token": token, "parent": "bearer"}
 
 @app.post("/register")
 def register_parent(parent: dict):
@@ -114,6 +114,18 @@ def delete_baby(baby_id: int, user=Depends(get_current_user)):
 @app.get("/parents")
 def get_parents(user=Depends(get_current_user)):
     return crud_parents.get_all_parents()
+
+@app.get("/parents/by_email/{email}")
+def get_parent_by_email(email: str, user=Depends(get_current_user)):
+    result = crud_parents.get_parent_by_email(email)
+    if not result:
+        raise HTTPException(status_code=404, detail="Parent not found")
+    # Nota: elimina password_hash del resultado por seguridad antes de retornar
+    if isinstance(result, dict):
+        result.pop("password_hash", None)
+    elif isinstance(result, (list, tuple)) and len(result) > 7:
+        result = result[:7]  # solo deja id, name, email, phone, relation, age, sex
+    return result
 
 @app.get("/parents/{parent_id}")
 def get_parent(parent_id: int, user=Depends(get_current_user)):
