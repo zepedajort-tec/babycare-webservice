@@ -11,7 +11,7 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='urllib3')
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-app = FastAPI(title="BabyCare API (FastAPI)", version="1.2")
+app = FastAPI(title="BabyCare API (FastAPI)", version="1.3")
 
 # =======================
 # LOGIN & REGISTRO (NO requieren JWT)
@@ -21,7 +21,7 @@ app = FastAPI(title="BabyCare API (FastAPI)", version="1.2")
 def login_parent(data: dict):
     email = data.get("email")
     password = data.get("password")
-    if not email or not password:
+    if not email or not password or email == "" or password == "":
         raise HTTPException(status_code=400, detail="Email and password are required")
 
     parent = crud_parents.get_parent_by_email(email)
@@ -44,7 +44,7 @@ def login_parent(data: dict):
 def register_parent(parent: dict):
     required_fields = ["name", "email", "password"]
     for field in required_fields:
-        if field not in parent or not parent[field]:
+        if field not in parent or not parent[field] or parent[field] == "":
             raise HTTPException(status_code=400, detail=f"Field {field} is required")
     existing = crud_parents.get_parent_by_email(parent["email"])
     if existing:
@@ -56,7 +56,6 @@ def register_parent(parent: dict):
         parent.get("phone", None),
         parent.get("relation", None),
         parent.get("age", None),
-        parent.get("sex", "O"),
         password_hash
     )
     saved_parent = crud_parents.get_parent_by_email(parent["email"])
@@ -70,11 +69,12 @@ def register_parent(parent: dict):
 
 @app.post("/refresh-token")
 def refresh_token(token: str = Depends(oauth2_scheme)):
+    if not token or token == "":
+        raise HTTPException(status_code=400, detail="Token is required")
     payload = verify_jwt_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-    # Aquí puedes volver a generar el token solo con el user_id/email y lo mismo que el original
     new_token = create_access_token({
         "user_id": payload["user_id"],
         "email": payload["email"],
@@ -92,6 +92,8 @@ def get_babies(user=Depends(get_current_user)):
 
 @app.get("/babies/{baby_id}")
 def get_baby(baby_id: int, user=Depends(get_current_user)):
+    if baby_id is None:
+        raise HTTPException(status_code=400, detail="baby_id is required")
     result = crud_babies.get_baby_by_id(baby_id)
     if not result or "message" in result:
         raise HTTPException(status_code=404, detail="Baby not found")
@@ -99,11 +101,16 @@ def get_baby(baby_id: int, user=Depends(get_current_user)):
 
 @app.post("/babies")
 def create_baby(baby: dict, user=Depends(get_current_user)):
+    required_fields = ["parent_id", "name", "age_months", "sex"]
+    for field in required_fields:
+        if field not in baby or baby[field] is None or baby[field] == "":
+            raise HTTPException(status_code=400, detail=f"Field {field} is required.")
     try:
         return crud_babies.create_baby(
             baby["parent_id"],
             baby["name"],
             baby["age_months"],
+            baby.get("sex", "O"),
             baby.get("weight", None),
             baby.get("height", None)
         )
@@ -112,17 +119,26 @@ def create_baby(baby: dict, user=Depends(get_current_user)):
 
 @app.put("/babies/{baby_id}")
 def update_baby(baby_id: int, baby: dict, user=Depends(get_current_user)):
+    if baby_id is None:
+        raise HTTPException(status_code=400, detail="baby_id is required")
+    required_fields = ["parent_id", "name", "age_months", "sex"]
+    for field in required_fields:
+        if field not in baby or baby[field] is None or baby[field] == "":
+            raise HTTPException(status_code=400, detail=f"Field {field} is required.")
     return crud_babies.update_baby(
         baby_id,
         baby["parent_id"],
         baby["name"],
         baby["age_months"],
+        baby.get("sex", "O"),
         baby.get("weight", None),
         baby.get("height", None)
     )
 
 @app.delete("/babies/{baby_id}")
 def delete_baby(baby_id: int, user=Depends(get_current_user)):
+    if baby_id is None:
+        raise HTTPException(status_code=400, detail="baby_id is required")
     return crud_babies.delete_baby(baby_id)
 
 # =======================
@@ -135,6 +151,8 @@ def get_parents(user=Depends(get_current_user)):
 
 @app.get("/parent/{email}")
 def get_parent_by_email(email: str, user=Depends(get_current_user)):
+    if not email or email == "":
+        raise HTTPException(status_code=400, detail="Email is required")
     result = crud_parents.get_parent_by_email(email)
     if not result:
         raise HTTPException(status_code=404, detail="Parent not found")
@@ -147,6 +165,8 @@ def get_parent_by_email(email: str, user=Depends(get_current_user)):
 
 @app.get("/parents/{parent_id}")
 def get_parent(parent_id: int, user=Depends(get_current_user)):
+    if parent_id is None:
+        raise HTTPException(status_code=400, detail="parent_id is required")
     result = crud_parents.get_parent_by_id(parent_id)
     if not result or "message" in result:
         raise HTTPException(status_code=404, detail="Parent not found")
@@ -154,6 +174,12 @@ def get_parent(parent_id: int, user=Depends(get_current_user)):
 
 @app.put("/parents/{parent_id}")
 def update_parent(parent_id: int, parent: dict, user=Depends(get_current_user)):
+    if parent_id is None:
+        raise HTTPException(status_code=400, detail="parent_id is required")
+    required_fields = ["name", "email", "password_hash"]
+    for field in required_fields:
+        if field not in parent or parent[field] is None or parent[field] == "":
+            raise HTTPException(status_code=400, detail=f"Field {field} is required.")
     return crud_parents.update_parent(
         parent_id,
         parent["name"],
@@ -167,6 +193,8 @@ def update_parent(parent_id: int, parent: dict, user=Depends(get_current_user)):
 
 @app.delete("/parents/{parent_id}")
 def delete_parent(parent_id: int, user=Depends(get_current_user)):
+    if parent_id is None:
+        raise HTTPException(status_code=400, detail="parent_id is required")
     return crud_parents.delete_parent(parent_id)
 
 # =======================
@@ -179,6 +207,8 @@ def get_records(user=Depends(get_current_user)):
 
 @app.get("/records/{record_id}")
 def get_record(record_id: int, user=Depends(get_current_user)):
+    if record_id is None:
+        raise HTTPException(status_code=400, detail="record_id is required")
     result = crud_records.get_record_by_id(record_id)
     if not result or "message" in result:
         raise HTTPException(status_code=404, detail="Record not found")
@@ -186,6 +216,10 @@ def get_record(record_id: int, user=Depends(get_current_user)):
 
 @app.post("/records")
 def create_record(record: dict, user=Depends(get_current_user)):
+    required_fields = ["baby_id", "date", "vaccine"]
+    for field in required_fields:
+        if field not in record or record[field] is None or record[field] == "":
+            raise HTTPException(status_code=400, detail=f"Field {field} is required.")
     try:
         return crud_records.create_record(
             record["baby_id"],
@@ -198,6 +232,12 @@ def create_record(record: dict, user=Depends(get_current_user)):
 
 @app.put("/records/{record_id}")
 def update_record(record_id: int, record: dict, user=Depends(get_current_user)):
+    if record_id is None:
+        raise HTTPException(status_code=400, detail="record_id is required")
+    required_fields = ["baby_id", "date", "vaccine"]
+    for field in required_fields:
+        if field not in record or record[field] is None or record[field] == "":
+            raise HTTPException(status_code=400, detail=f"Field {field} is required.")
     return crud_records.update_record(
         record_id,
         record["baby_id"],
@@ -208,4 +248,6 @@ def update_record(record_id: int, record: dict, user=Depends(get_current_user)):
 
 @app.delete("/records/{record_id}")
 def delete_record(record_id: int, user=Depends(get_current_user)):
+    if record_id is None:
+        raise HTTPException(status_code=400, detail="record_id is required")
     return crud_records.delete_record(record_id)

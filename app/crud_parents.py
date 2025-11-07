@@ -16,10 +16,10 @@ def get_parent_by_id(parent_id: int):
     conn.close()
     return result if result else {"message": "Parent not found"}
 
-def create_parent(name, email, phone, relation, age, sex, password_hash):
+def create_parent(name, email, phone, relation, age, password_hash):
     conn = get_connection()
     with conn.cursor() as cursor:
-        cursor.callproc("sp_create_parent", (name, email, phone, relation, age, sex, password_hash))
+        cursor.callproc("sp_create_parent", (name, email, phone, relation, age, password_hash))
         conn.commit()
     conn.close()
     return {"message": "Parent created successfully"}

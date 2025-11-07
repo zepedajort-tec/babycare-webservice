@@ -16,18 +16,18 @@ def get_baby_by_id(baby_id: int):
     conn.close()
     return result if result else {"message": "Baby not found"}
 
-def create_baby(parent_id, name, age_months, weight, height):
+def create_baby(parent_id, name, age_months, sex, weight, height):
     conn = get_connection()
     with conn.cursor() as cursor:
-        cursor.callproc("sp_create_baby", (parent_id, name, age_months, weight, height))
+        cursor.callproc("sp_create_baby", (parent_id, name, age_months, sex, weight, height))
         conn.commit()
     conn.close()
     return {"message": "Baby created successfully"}
 
-def update_baby(id, parent_id, name, age_months, weight, height):
+def update_baby(id, parent_id, name, age_months, sex, weight, height):
     conn = get_connection()
     with conn.cursor() as cursor:
-        cursor.callproc("sp_update_baby", (id, parent_id, name, age_months, weight, height))
+        cursor.callproc("sp_update_baby", (id, parent_id, name, age_months, sex, weight, height))
         conn.commit()
     conn.close()
     return {"message": "Baby updated successfully"}
