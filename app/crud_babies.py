@@ -16,6 +16,14 @@ def get_baby_by_id(baby_id: int):
     conn.close()
     return result if result else {"message": "Baby not found"}
 
+def get_babies_by_parent_id(parent_id: int):
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.callproc("sp_read_babies_by_parent", (parent_id,))
+        result = cursor.fetchone()
+    conn.close()
+    return result if result else {"message": "Baby not found"}
+
 def create_baby(parent_id, name, age_months, sex, weight, height):
     conn = get_connection()
     with conn.cursor() as cursor:

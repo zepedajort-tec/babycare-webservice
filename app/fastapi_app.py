@@ -99,6 +99,15 @@ def get_baby(baby_id: int, user=Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="Baby not found")
     return result
 
+@app.get("/babies/{parent_id}")
+def get_babies_by_parent(parent_id: int, user=Depends(get_current_user)):
+    if parent_id is None:
+        raise HTTPException(status_code=400, detail="baby_id is required")
+    result = crud_babies.get_babies_by_parent_id(parent_id)
+    if not result or "message" in result:
+        raise HTTPException(status_code=404, detail="Baby not found")
+    return result
+
 @app.post("/babies")
 def create_baby(baby: dict, user=Depends(get_current_user)):
     required_fields = ["parent_id", "name", "age_months", "sex"]
