@@ -121,14 +121,14 @@ def get_babies_by_parent(parent_id: int, user=Depends(get_current_user)):
     # En cualquier otro caso devolvemos result (por compatibilidad)
     return result
 
-@app.post("/babies")
+@app.post("/babies", status_code=status.HTTP_201_CREATED)
 def create_baby(baby: dict, user=Depends(get_current_user)):
     required_fields = ["parent_id", "name", "age_months", "sex"]
     for field in required_fields:
         if field not in baby or baby[field] is None or baby[field] == "":
             raise HTTPException(status_code=400, detail=f"Field {field} is required.")
     try:
-        return crud_babies.create_baby(
+        created = crud_babies.create_baby(
             baby["parent_id"],
             baby["name"],
             baby["age_months"],
@@ -136,9 +136,9 @@ def create_baby(baby: dict, user=Depends(get_current_user)):
             baby.get("weight", None),
             baby.get("height", None)
         )
+        return created
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 @app.put("/babies/{baby_id}")
 def update_baby(baby_id: int, baby: dict, user=Depends(get_current_user)):
     if baby_id is None:
