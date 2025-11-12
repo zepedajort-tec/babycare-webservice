@@ -121,7 +121,7 @@ def get_babies_by_parent(parent_id: int, user=Depends(get_current_user)):
     # En cualquier otro caso devolvemos result (por compatibilidad)
     return result
 
-@app.post("/babies", status_code=status.HTTP_201_CREATED)
+@app.post("/babies")
 def create_baby(baby: dict, user=Depends(get_current_user)):
     required_fields = ["parent_id", "name", "age_months", "sex"]
     for field in required_fields:
