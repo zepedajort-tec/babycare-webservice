@@ -99,13 +99,26 @@ def get_baby(baby_id: int, user=Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="Baby not found")
     return result
 
-@app.get("/babies/{parent_id}")
+@app.get("/parents/{parent_id}/babies")
 def get_babies_by_parent(parent_id: int, user=Depends(get_current_user)):
     if parent_id is None:
-        raise HTTPException(status_code=400, detail="baby_id is required")
+        raise HTTPException(status_code=400, detail="parent_id is required")
+
     result = crud_babies.get_babies_by_parent_id(parent_id)
-    if not result or "message" in result:
-        raise HTTPException(status_code=404, detail="Baby not found")
+
+    # Normalizar: si el CRUD devuelve None -> respondemos [] con 200 OK
+    if result is None:
+        return []
+
+    # Si devuelve una lista (incluso vacía) -> devolvemos tal cual
+    if isinstance(result, list):
+        return result
+
+    # Si devuelve dict con 'message' -> error (404)
+    if isinstance(result, dict) and "message" in result:
+        raise HTTPException(status_code=404, detail=result.get("message", "Baby not found"))
+
+    # En cualquier otro caso devolvemos result (por compatibilidad)
     return result
 
 @app.post("/babies")
