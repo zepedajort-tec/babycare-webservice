@@ -18,11 +18,23 @@ def get_baby_by_id(baby_id: int):
 
 def get_babies_by_parent_id(parent_id: int):
     conn = get_connection()
-    with conn.cursor() as cursor:
-        cursor.callproc("sp_read_babies_by_parent", (parent_id,))
-        result = cursor.fetchone()
-    conn.close()
-    return result if result else {"message": "Baby not found"}
+    try:
+        with conn.cursor() as cursor:
+            cursor.callproc("sp_read_babies_by_parent", (parent_id,))
+            # Obtener filas del primer result set
+            rows = cursor.fetchall()
+            # Si el cursor devuelve tuplas, convertir a list[dict]
+            if cursor.description and rows and not isinstance(rows[0], dict):
+                cols = [col[0] for col in cursor.description]
+                result = [dict(zip(cols, row)) for row in rows]
+            else:
+                result = rows or []
+            # Si la librería deja más result sets, opcionalmente consumirlos:
+            # while cursor.nextset():
+            #     _ = cursor.fetchall()
+            return result
+    finally:
+        conn.close()
 
 def create_baby(parent_id, name, age_months, sex, weight, height):
     conn = get_connection()
