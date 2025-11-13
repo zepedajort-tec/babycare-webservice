@@ -293,7 +293,7 @@ def get_devtips(user=Depends(get_current_user)):
 
 @app.get("/devtips/{tip_id}")
 def get_devtip(tip_id: int, user=Depends(get_current_user)):
-    """Obtiene un consejo específico por su ID"""
+  
     if not tip_id:
         raise HTTPException(status_code=400, detail="tip_id is required")
     try:
@@ -307,7 +307,6 @@ def get_devtip(tip_id: int, user=Depends(get_current_user)):
 
 @app.post("/devtips")
 def create_devtip(tip: dict, user=Depends(get_current_user)):
-    """Crea un nuevo consejo de desarrollo"""
     required_fields = ["title", "description", "age_min", "age_max", "category"]
     for field in required_fields:
         if field not in tip or tip[field] in (None, ""):
@@ -328,7 +327,7 @@ def create_devtip(tip: dict, user=Depends(get_current_user)):
 
 @app.put("/devtips/{tip_id}")
 def update_devtip(tip_id: int, tip: dict, user=Depends(get_current_user)):
-    """Actualiza un consejo existente"""
+   
     if not tip_id:
         raise HTTPException(status_code=400, detail="tip_id is required")
 
@@ -353,7 +352,7 @@ def update_devtip(tip_id: int, tip: dict, user=Depends(get_current_user)):
 
 @app.delete("/devtips/{tip_id}")
 def delete_devtip(tip_id: int, user=Depends(get_current_user)):
-    """Elimina un consejo por ID"""
+    
     if not tip_id:
         raise HTTPException(status_code=400, detail="tip_id is required")
     try:
