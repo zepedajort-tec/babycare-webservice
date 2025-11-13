@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from app import crud_babies
 from app import crud_parents
 from app import crud_records
-from app import crud_development_tips as crud_devtips
+from app import crud_devtips
 from app.auth_utils import create_access_token, verify_jwt_token
 from app.auth_dependency import get_current_user
 from fastapi.security import OAuth2PasswordBearer
