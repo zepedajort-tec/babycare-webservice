@@ -283,7 +283,7 @@ def delete_record(record_id: int, user=Depends(get_current_user)):
 def get_devtips(user=Depends(get_current_user)):
     """Obtiene todos los consejos de desarrollo"""
     try:
-        tips = crud_devtips.get_all_devtips()
+        tips = crud_devtips.get_all_dev_tips()
         if not tips:
             return []
         return tips
@@ -297,7 +297,7 @@ def get_devtip(tip_id: int, user=Depends(get_current_user)):
     if not tip_id:
         raise HTTPException(status_code=400, detail="tip_id is required")
     try:
-        tip = crud_devtips.get_devtip_by_id(tip_id)
+        tip = crud_devtips.get_dev_tip_by_id(tip_id)
         if not tip or "message" in tip:
             raise HTTPException(status_code=404, detail="DevTip not found")
         return tip
@@ -307,18 +307,16 @@ def get_devtip(tip_id: int, user=Depends(get_current_user)):
 
 @app.post("/devtips")
 def create_devtip(tip: dict, user=Depends(get_current_user)):
-    required_fields = ["title", "description", "age_min", "age_max", "category"]
+    required_fields = ["age", "category", "description"]
     for field in required_fields:
         if field not in tip or tip[field] in (None, ""):
             raise HTTPException(status_code=400, detail=f"Field {field} is required")
 
     try:
-        crud_devtips.create_devtip(
-            tip["title"],
-            tip["description"],
-            tip["age_min"],
-            tip["age_max"],
-            tip["category"]
+        crud_devtips.create_dev_tip(
+            tip["age"],
+            tip["category"],
+            tip["description"]
         )
         return {"message": "Development Tip created successfully"}
     except Exception as e:
@@ -331,19 +329,17 @@ def update_devtip(tip_id: int, tip: dict, user=Depends(get_current_user)):
     if not tip_id:
         raise HTTPException(status_code=400, detail="tip_id is required")
 
-    required_fields = ["title", "description", "age_min", "age_max", "category"]
+    required_fields = ["age", "category", "description"]
     for field in required_fields:
         if field not in tip or tip[field] in (None, ""):
             raise HTTPException(status_code=400, detail=f"Field {field} is required")
 
     try:
-        crud_devtips.update_devtip(
+        crud_devtips.update_dev_tip(
             tip_id,
-            tip["title"],
-            tip["description"],
-            tip["age_min"],
-            tip["age_max"],
-            tip["category"]
+            tip["age"],
+            tip["category"],
+            tip["description"]
         )
         return {"message": "Development Tip updated successfully"}
     except Exception as e:
@@ -356,7 +352,7 @@ def delete_devtip(tip_id: int, user=Depends(get_current_user)):
     if not tip_id:
         raise HTTPException(status_code=400, detail="tip_id is required")
     try:
-        crud_devtips.delete_devtip(tip_id)
+        crud_devtips.delete_dev_tip(tip_id)
         return {"message": "Development Tip deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
