@@ -213,6 +213,11 @@ BEGIN
 SELECT * FROM development_tips;
 END$$
 
+CREATE PROCEDURE sp_read_tips_by_id(IN p_id INT)
+BEGIN
+SELECT * FROM development_tips as dt where dt.id = p_id;
+END$$
+
 CREATE PROCEDURE sp_update_tip(IN p_id INT, IN p_age_range VARCHAR(50), IN p_category VARCHAR(50), IN p_tip_text TEXT)
 BEGIN
 UPDATE development_tips
